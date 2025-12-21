@@ -1,5 +1,5 @@
 homepage: "https://cookiebeam.com"
-documentation: "https://docs.cookiebeam.com/integrations/google-tag-manager"
+documentation: "https://cookiebeam.com/docs/integrations/google-tag-manager"
 versions:
   - sha: 62039e6c29e219ed687cebb8bb6ceff3a3870da4
     changeNotes: Initial release.
