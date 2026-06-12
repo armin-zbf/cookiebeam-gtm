@@ -42,7 +42,7 @@ ___TEMPLATE_PARAMETERS___
     "simpleValueType": true,
     "valueUnit": "milliseconds",
     "defaultValue": 2000,
-    "help": "How long to wait (in milliseconds) for consent updates before firing Google tags that have been queued up.",
+    "help": "How long to wait (in milliseconds) for consent updates before firing Google tags that have been queued up. Minimum 100ms; lower values are raised to 100ms.",
     "valueValidators": [
       {
         "type": "NON_NEGATIVE_NUMBER"
@@ -254,8 +254,13 @@ const JSON = require('JSON');
 const injectScript = require('injectScript');
 const queryPermission = require('queryPermission');
 const createQueue = require('createQueue');
+const encodeUriComponent = require('encodeUriComponent');
 
-const waitForUpdate = makeNumber(data.wait_for_update) || 2000;
+// Enforce a 100ms floor so the updateConsent command has time to fire before
+// queued tags flush (Community Template Gallery requirement). Values below the
+// floor are silently raised to 100ms; 0/blank falls back to the 2000ms default.
+const requestedWaitForUpdate = makeNumber(data.wait_for_update) || 2000;
+const waitForUpdate = requestedWaitForUpdate < 100 ? 100 : requestedWaitForUpdate;
 const urlPassthrough = data.url_passthrough || false;
 const adsDataRedaction = data.ads_data_redaction !== false;
 const regionSettings = data.regionSettings || [];
@@ -402,7 +407,7 @@ if (enableGoogleConsentMode) {
 }
 
 if (bannerId) {
-  const scriptUrl = 'https://cdn.cookiebeam.com/banner/' + bannerId + '/default/loader-gtm.js';
+  const scriptUrl = 'https://cdn.cookiebeam.com/banner/' + encodeUriComponent(bannerId) + '/default/loader-gtm.js';
 
   if (queryPermission('inject_script', scriptUrl)) {
     injectScript(scriptUrl, function() {
