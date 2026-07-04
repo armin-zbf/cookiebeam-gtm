@@ -1,6 +1,8 @@
 homepage: "https://cookiebeam.com"
 documentation: "https://cookiebeam.com/guides/gtm-integration"
 versions:
+  - sha: fcc233594b60131f75151474eab3021378ed4ab9
+    changeNotes: "Square 96x96 icon, gtmOnFailure when the banner loader fails to load, and tests for the wait_for_update floor and failure path."
   - sha: 4985f767d6e019f0a4445219521075b1e794b3c9
     changeNotes: "Encode banner ID in the loader URL and enforce a 100ms minimum for wait_for_update."
   - sha: 62039e6c29e219ed687cebb8bb6ceff3a3870da4
