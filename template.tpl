@@ -364,7 +364,9 @@ let currentMarketingConsent = false;
 const cookieValue = getCookieValues('cb_cookie');
 if (cookieValue && cookieValue.length > 0) {
   const storedConsent = JSON.parse(cookieValue[0]);
-  if (storedConsent && storedConsent.categories) {
+  // A pending opt-in record anchors visitor identity but is not a completed
+  // choice. Keep GTM on its default state until the visitor acts.
+  if (storedConsent && storedConsent.categories && storedConsent.isPending !== true) {
     const categories = storedConsent.categories;
     const hasMarketing = categories.indexOf('marketing') !== -1;
     const hasAnalytics = categories.indexOf('analytics') !== -1;
@@ -932,6 +934,20 @@ scenarios:
       security_storage: 'granted'
     });
     assertApi('gtmOnSuccess').wasCalled();
+- name: pending stored cookie does not update consent
+  code: |-
+    // A pending record is identity-only; the visitor has not made a choice.
+    mock('getCookieValues', (name) => {
+      if (name === 'cb_cookie') {
+        return ['{"categories":["necessary"],"isPending":true,"isDefaultState":true}'];
+      }
+      return [];
+    });
+
+    runCode(mockData);
+
+    assertApi('updateConsentState').wasNotCalled();
+    assertApi('gtmOnSuccess').wasCalled();
 - name: gtag settings applied
   code: |-
     // Call runCode to run the template's code.
@@ -1010,7 +1026,7 @@ setup: |-
 
 ___NOTES___
 
-CookieBeam GTM Consent Mode Template v3.4.0
+CookieBeam GTM Consent Mode Template v3.5.0
 
 This template provides complete CookieBeam integration for Google Tag Manager Consent Mode v2.
 It follows the industry-standard pattern used by leading CMPs.
@@ -1044,6 +1060,10 @@ GTM Built-in Consent Events:
 GTM automatically fires consent events when you use the consent APIs:
 - Consent state changes trigger dependent tags automatically
 - No need for custom dataLayer events
+
+v3.5.0 Changes:
+- Ignore identity-only pending consent cookies until the visitor makes an explicit choice
+- Added a regression test that prevents pending records from updating GTM consent
 
 v3.4.0 Changes (Community Template Gallery review):
 - Banner ID is URL-encoded with encodeUriComponent before building the loader URL
@@ -1080,5 +1100,3 @@ v3.0.0 Changes:
 - Better GTM synchronization
 
 For more information visit: https://cookiebeam.com/guides/gtm-integration
-
-
