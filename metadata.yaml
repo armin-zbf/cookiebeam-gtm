@@ -1,6 +1,8 @@
 homepage: "https://cookiebeam.com"
 documentation: "https://cookiebeam.com/guides/gtm-integration"
 versions:
+  - sha: a7427a7f24ba3525987af2d9d06f82d4657aae10
+    changeNotes: "Ignore identity-only pending consent records until the visitor makes an explicit choice."
   - sha: fcc233594b60131f75151474eab3021378ed4ab9
     changeNotes: "Square 96x96 icon, gtmOnFailure when the banner loader fails to load, and tests for the wait_for_update floor and failure path."
   - sha: 4985f767d6e019f0a4445219521075b1e794b3c9
